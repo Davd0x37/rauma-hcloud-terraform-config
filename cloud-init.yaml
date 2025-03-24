@@ -1,0 +1,45 @@
+#cloud-config
+package_update: true
+package_upgrade: true
+
+users:
+  - name: ${user_name_admin}
+    groups: sudo
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ${ssh_key_admin}
+    sudo: ALL=(ALL) ALL
+
+  - name: ${user_name_mantainer}
+    groups: sudo
+    shell: /bin/bash
+    ssh-authorized-keys:
+      - ${ssh_key_mantainer}
+    sudo: ALL=(ALL) NOPASSWD:ALL
+
+write_files:
+  - path: /etc/ssh/sshd_config.d/hardening.conf
+    content: |
+      Port ${ssh_port}
+      PermitRootLogin no
+      PasswordAuthentication no
+      PubkeyAuthentication yes
+      PermitEmptyPasswords no
+      ChallengeResponseAuthentication no
+      KbdInteractiveAuthentication no
+      X11Forwarding no
+      AllowAgentForwarding no
+      MaxAuthTries 3
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+      LoginGraceTime 120
+      Protocol 2
+      AllowUsers ${user_name_admin} ${user_name_mantainer}
+
+packages:
+  - fail2ban
+
+runcmd:
+  # Fail2ban for SSH
+  - echo -e "[sshd]\nenabled = true\nport = ${ssh_port}\nfilter = sshd\nlogpath = /var/log/auth.log\nmaxretry = 5\nfindtime = 300\nbantime = 120" > /etc/fail2ban/jail.d/sshd.local
+  - systemctl restart fail2ban
