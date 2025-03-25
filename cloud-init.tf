@@ -7,9 +7,7 @@ locals {
       user_name_mantainer = var.user_name_mantainer
       ssh_key_mantainer   = var.ssh_key_mantainer
       ssh_port            = var.ssh_port
-      user_name_admin     = var.user_name_admin
-      user_name_mantainer = var.user_name_mantainer
-      ssh_port            = var.ssh_port
+      user_admin_password = var.user_admin_password
     }
   )
 }

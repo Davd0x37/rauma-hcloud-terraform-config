@@ -5,6 +5,12 @@ variable "user_name_admin" {
   default     = "admin"
 }
 
+# Admin password
+variable "user_admin_password" {
+  type        = string
+  description = "admin password"
+}
+
 # Mantainer account - user with privileges to manage the server
 variable "user_name_mantainer" {
   type        = string

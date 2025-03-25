@@ -55,6 +55,7 @@ This configuration will deploy a Hetzner Cloud server with:
    - `ssh_port`: Custom SSH port (default: 22)
    - `ssh_key_admin`: Admin's public SSH key
    - `user_name_admin`: Admin username
+   - `user_admin_password`: Admin password hash -> Generating password hash for `user_admin_password` on MacOS: `openssl passwd -6`
    - `ssh_key_mantainer`: Maintainer's public SSH key
    - `user_name_mantainer`: Maintainer username
    - `firewall_source_ips`: List of IP addresses allowed for incoming traffic, example:

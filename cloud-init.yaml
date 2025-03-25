@@ -6,13 +6,16 @@ users:
   - name: ${user_name_admin}
     groups: sudo
     shell: /bin/bash
+    lock_passwd: true
+    passwd: ${user_admin_password}
+    sudo: ALL=(ALL) ALL
     ssh-authorized-keys:
       - ${ssh_key_admin}
-    sudo: ALL=(ALL) ALL
 
   - name: ${user_name_mantainer}
     groups: sudo
     shell: /bin/bash
+    lock_passwd: true
     ssh-authorized-keys:
       - ${ssh_key_mantainer}
     sudo: ALL=(ALL) NOPASSWD:ALL
