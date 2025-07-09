@@ -51,13 +51,13 @@ This configuration will deploy a Hetzner Cloud server with:
 3. Edit `env.tfvars` with your values:
 
    - `hcloud_token`: Your Hetzner Cloud API token (get it from Hetzner Cloud Console)
-   - `base_name`: Server name
+   - `server_name`: Server name
    - `ssh_port`: Custom SSH port (default: 22)
-   - `ssh_key_admin`: Admin's public SSH key
-   - `user_name_admin`: Admin username
+   - `user_admin_ssh_key`: Admin's public SSH key
+   - `user_admin_name`: Admin username
    - `user_admin_password`: Admin password hash -> Generating password hash for `user_admin_password` on MacOS: `openssl passwd -6`
-   - `ssh_key_mantainer`: Maintainer's public SSH key
-   - `user_name_mantainer`: Maintainer username
+   - `user_mantainer_ssh_key`: Maintainer's public SSH key
+   - `user_mantainer_name`: Maintainer username
    - `firewall_source_ips`: List of IP addresses allowed for incoming traffic, example:
      ```
      firewall_source_ips = ["xxx.xxx.xxx.xxx", "xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx"]

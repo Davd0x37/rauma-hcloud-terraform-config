@@ -3,21 +3,21 @@ package_update: true
 package_upgrade: true
 
 users:
-  - name: ${user_name_admin}
+  - name: ${user_admin_name}
     groups: sudo
     shell: /bin/bash
     lock_passwd: true
     passwd: ${user_admin_password}
     sudo: ALL=(ALL) ALL
     ssh-authorized-keys:
-      - ${ssh_key_admin}
+      - ${user_admin_ssh_key}
 
-  - name: ${user_name_mantainer}
+  - name: ${user_mantainer_name}
     groups: sudo
     shell: /bin/bash
     lock_passwd: true
     ssh-authorized-keys:
-      - ${ssh_key_mantainer}
+      - ${user_mantainer_ssh_key}
     sudo: ALL=(ALL) NOPASSWD:ALL
 
 write_files:
@@ -37,7 +37,7 @@ write_files:
       ClientAliveCountMax 2
       LoginGraceTime 120
       Protocol 2
-      AllowUsers ${user_name_admin} ${user_name_mantainer}
+      AllowUsers ${user_admin_name} ${user_mantainer_name}
 
 packages:
   - fail2ban
@@ -46,3 +46,4 @@ runcmd:
   # Fail2ban for SSH
   - echo -e "[sshd]\nenabled = true\nport = ${ssh_port}\nfilter = sshd\nlogpath = /var/log/auth.log\nmaxretry = 5\nfindtime = 300\nbantime = 120" > /etc/fail2ban/jail.d/sshd.local
   - systemctl restart fail2ban
+  - curl -fsSL https://tailscale.com/install.sh | sh

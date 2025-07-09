@@ -5,7 +5,7 @@ variable "firewall_source_ips" {
 }
 
 resource "hcloud_firewall" "server_s1_firewall" {
-  name = "${var.base_name}-firewall"
+  name = "${var.server_name}-firewall"
 
   # SSH Rules
   rule {

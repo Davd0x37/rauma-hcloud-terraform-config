@@ -6,33 +6,33 @@ variable "ssh_port" {
 }
 
 # Admin ssh key - used in cloud-init.tf and while creating server
-variable "ssh_key_admin" {
+variable "user_admin_ssh_key" {
   type        = string
   description = "admin ssh key - change to custom in env.tfvars"
 }
 
 # Mantainer ssh key - same as admin key
-variable "ssh_key_mantainer" {
+variable "user_mantainer_ssh_key" {
   type        = string
   description = "mantainer ssh key - change to custom in env.tfvars"
 }
 
 # Main ssh key for admin
-resource "hcloud_ssh_key" "server_s1_ssh_key_admin" {
-  name       = "${var.base_name}-${var.base_location}-ssh-key-admin"
-  public_key = var.ssh_key_admin
+resource "hcloud_ssh_key" "server_s1_user_admin_ssh_key" {
+  name       = "${var.server_name}-${var.server_location}-ssh-key-admin"
+  public_key = var.user_admin_ssh_key
   labels = {
     managed    = "true"
-    managed_by = var.user_name_admin
+    managed_by = var.user_admin_name
   }
 }
 
 # SSH key for user - it will be user with privileges to manage the server - coolify or other
 resource "hcloud_ssh_key" "server_s1_ssh_key_user" {
-  name       = "${var.base_name}-${var.base_location}-ssh-key-mantainer"
-  public_key = var.ssh_key_mantainer
+  name       = "${var.server_name}-${var.server_location}-ssh-key-mantainer"
+  public_key = var.user_mantainer_ssh_key
   labels = {
     managed    = "true"
-    managed_by = var.user_name_mantainer
+    managed_by = var.user_mantainer_name
   }
 }

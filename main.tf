@@ -1,12 +1,12 @@
 resource "hcloud_server" "server_s1_helsinki" {
-  name         = "${var.base_name}-${var.base_location}" # Server name
-  image        = var.system_debian_12                    # Base image
-  server_type  = var.server_cax11_arm                    # Server type - default CAX11 with ARM CPU
-  datacenter   = var.datacenter_helsinki                 # Datacenter location - default Helsinki
-  user_data    = local.cloud_init_config                 # Located in cloud-init.tf
-  firewall_ids = [hcloud_firewall.server_s1_firewall.id] # Firewall ID list
+  name         = "${var.server_name}-${var.server_location}" # Server name
+  image        = var.system_image_name                       # Base image
+  server_type  = var.server_type                             # Server type - default CAX11 with ARM CPU
+  datacenter   = var.datacenter_id                           # Datacenter location - default Helsinki
+  user_data    = local.cloud_init_config                     # Located in cloud-init.tf
+  firewall_ids = [hcloud_firewall.server_s1_firewall.id]     # Firewall ID list
   ssh_keys = [
-    hcloud_ssh_key.server_s1_ssh_key_admin.id,
+    hcloud_ssh_key.server_s1_user_admin_ssh_key.id,
     hcloud_ssh_key.server_s1_ssh_key_user.id
   ]
 

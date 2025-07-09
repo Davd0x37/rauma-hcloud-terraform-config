@@ -1,5 +1,5 @@
 # Admin account - root alternative i guess?
-variable "user_name_admin" {
+variable "user_admin_name" {
   type        = string
   description = "admin account"
   default     = "admin"
@@ -12,7 +12,7 @@ variable "user_admin_password" {
 }
 
 # Mantainer account - user with privileges to manage the server
-variable "user_name_mantainer" {
+variable "user_mantainer_name" {
   type        = string
   description = "mantainer account"
   default     = "mantainer"
