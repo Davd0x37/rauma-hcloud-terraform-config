@@ -29,3 +29,8 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+# Ansible sensitive data
+ansible/secret-vars.yml
+ansible/inventory.yml
+.env
