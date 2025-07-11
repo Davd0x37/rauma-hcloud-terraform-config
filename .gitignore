@@ -34,3 +34,4 @@ terraform.rc
 ansible/secret-vars.yml
 ansible/inventory.yml
 .env
+**/.ansible/*

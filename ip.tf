@@ -7,7 +7,7 @@ resource "hcloud_primary_ip" "server_s1_primary_ipv4" {
   auto_delete   = false
   labels = {
     managed    = "true"
-    managed_by = var.user_admin_name
+    managed_by = "admin"
   }
 }
 
@@ -20,6 +20,6 @@ resource "hcloud_primary_ip" "server_s1_primary_ipv6" {
   auto_delete   = false
   labels = {
     managed    = "true"
-    managed_by = var.user_admin_name
+    managed_by = "admin"
   }
 }

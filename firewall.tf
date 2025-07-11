@@ -15,6 +15,14 @@ resource "hcloud_firewall" "server_s1_firewall" {
     source_ips = var.firewall_source_ips # Allowed IPs for incoming traffic
   }
 
+  # Default SSH port rule
+  rule {
+    protocol   = "tcp"                   # Firewall rule for TCP
+    direction  = "in"                    # Incoming traffic
+    port       = "22"                    # Default SSH port
+    source_ips = var.firewall_source_ips # Allowed IPs for incoming traffic
+  }
+
   # Port 80 Rules
   rule {
     protocol   = "tcp"                   # Firewall rule for TCP

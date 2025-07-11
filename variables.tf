@@ -1,5 +1,3 @@
-# Description: Variables for the Hetzner Cloud provider
-
 # HCLOUD token
 variable "hcloud_token" {
   description = "Hetzner API token"
@@ -39,4 +37,25 @@ variable "datacenter_id" {
   type        = string
   description = "server datacenter location - default helsinki"
   default     = "hel1-dc2"
+}
+
+# SSH port configuration
+variable "ssh_port" {
+  type        = number
+  description = "Custom SSH port"
+  default     = 22
+}
+
+# Users configuration
+variable "users" {
+  type = list(object({
+    name                       = string
+    groups                     = string
+    ssh_key                    = string
+    identity_file              = string
+    use_identity_file_for_root = optional(bool, false)
+    password                   = optional(string)
+    sudo_nopasswd              = optional(bool, false)
+  }))
+  description = "List of users to create on the server"
 }
