@@ -8,10 +8,6 @@ resource "hcloud_server" "server_s1_helsinki" {
     for ssh_key in hcloud_ssh_key.user_ssh_keys : ssh_key.id
   ]
 
-  # provisioner "local-exec" {
-  #   command = "ansible-playbook -i ansible/inventory.yml ansible/playbook.yml"
-  # }
-
   public_net {
     ipv4_enabled = true
     ipv4         = hcloud_primary_ip.server_s1_primary_ipv4.id
