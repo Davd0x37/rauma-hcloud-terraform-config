@@ -35,3 +35,6 @@ ansible/secret-vars.yml
 ansible/inventory.yml
 .env
 **/.ansible/*
+
+
+.DS_Store
