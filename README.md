@@ -37,20 +37,33 @@ This configuration will deploy a Hetzner Cloud server with:
 ## Deployment Steps
 
 1.  Clone this repository.
+
 2.  Create your variables file:
+
     ```bash
     cp env.tfvars.example env.tfvars
     ```
+
 3.  Edit `env.tfvars` with your values:
+
     - `hcloud_token`: Your Hetzner Cloud API token.
     - `server_name`: A name for your server.
     - `ssh_port`: The custom SSH port you want to use.
     - `users`: A list of user objects to be created on the server. See `env.tfvars.example` for structure and examples.
     - `firewall_source_ips`: A list of your IP addresses to allow access.
+    - `tailscale_auth_key`: Your Tailscale authentication key.
+      - **If your key is reusable:** You can safely store it in `env.tfvars`.
+      - **If your key is not reusable:** Do not store it in `env.tfvars`. Instead, provide it manually when running `terraform apply`, e.g.:
+        ```bash
+        terraform apply -var 'tailscale_auth_key=tskey-auth-...'
+        ```
+
 4.  Initialize Terraform:
+
     ```bash
     terraform init
     ```
+
 5.  Deploy the infrastructure and run Ansible:
     ```bash
     terraform apply -var-file=env.tfvars
@@ -59,6 +72,8 @@ This configuration will deploy a Hetzner Cloud server with:
 Note: If you use a different name for your variables file, adjust the `-var-file` parameter accordingly.
 
 ## Re-running Ansible
+
+Before running Ansible, you need to authenticate with the created server. I use an SSH agent, so authentication happens automatically for me. I am not sure if this is the best or safest method, but it makes things easier in my workflow.
 
 If you make changes to your Ansible playbooks and want to apply them to the existing server without recreating it, you can run Ansible directly:
 
@@ -87,3 +102,41 @@ Include ~/.ssh/HCloudTerraform/config
 ```
 
 This ensures that your SSH client will always use the latest server connection details managed by Terraform. If you change the output path in your Terraform configuration, update the Include path accordingly.
+
+## Tailscale ACL Configuration
+
+To allow Tailscale to manage SSH connections, you need to update your Tailscale ACLs. The server's hostname in Tailscale is a combination of the `server_name` and `server_location` variables (e.g., `my-server-helsinki`).
+
+1.  **Define Tag Owners**:
+    In your Tailscale ACL policy, add the server as a tag with an owner. Replace `YOUR_SERVER_HOSTNAME` with your server's hostname (e.g., `my-server-helsinki`).
+
+    ```json
+    "tagOwners": {
+    	"tag:YOUR_SERVER_HOSTNAME": ["user"],
+    },
+    ```
+
+    The `user` can be your GitHub username (e.g., `user@github`) or your email address.
+
+2.  **Add SSH Access Rule**:
+    Add the following rule to your ACLs to allow the specified user to connect via SSH.
+
+    ```json
+    {
+      "action": "accept",
+      "src": ["user"],
+      "dst": ["tag:YOUR_SERVER_HOSTNAME"],
+      "users": ["autogroup:nonroot"]
+    }
+    ```
+
+## Coolify Integration
+
+To add the newly created server to a Coolify instance as a remote server, follow these steps:
+
+1.  **Log into your Coolify server**: First, connect to the machine where your Coolify instance is running (e.g., a Raspberry Pi).
+2.  **Connect to the new server**: From your Coolify server, establish an initial SSH connection to the new server created by Terraform. This helps verify connectivity.
+3.  **Add the server in Coolify**:
+    - In the Coolify UI, navigate to add a new server.
+    - When prompted for the SSH key, you can generate a new one or use any key. Since the connection is managed by Tailscale, this key will not be used for authentication.
+    - For the server's IP address, **use the Tailscale IP address** of the new server, not its public IP address.

@@ -1,0 +1,23 @@
+---
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: "{{ item.groups }}"
+    shell: /bin/bash
+    password: "{{ item.password | default(omit) }}"
+  with_items: "{{ users }}"
+
+- name: Add SSH keys for users
+  ansible.posix.authorized_key:
+    user: "{{ item.name }}"
+    key: "{{ item.ssh_key }}"
+    state: present
+  with_items: "{{ users }}"
+
+- name: Configure sudoers for no-password sudo
+  ansible.builtin.lineinfile:
+    path: /etc/sudoers
+    line: "{{ item.name }} ALL=(ALL) NOPASSWD: ALL"
+    validate: 'visudo -cf %s'
+  with_items: "{{ users }}"
+  when: item.sudo_nopasswd | default(false)

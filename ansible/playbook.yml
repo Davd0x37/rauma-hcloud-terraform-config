@@ -1,86 +1,30 @@
 ---
-- name: Server Configuration and Hardening
+- name: Server Hardening Playbook
   hosts: all
+  become: true
   vars_files:
     - secret-vars.yml
 
   tasks:
-    - name: Update package cache and upgrade system
-      ansible.builtin.apt:
-        update_cache: true
-        upgrade: dist
+    - name: Include package installation tasks
+      ansible.builtin.include_tasks: tasks/packages.yml
 
-    - name: Install required packages
-      ansible.builtin.apt:
-        name:
-          - fail2ban
-          - curl
-          - ufw
-        state: present
+    - name: Include user creation tasks
+      ansible.builtin.include_tasks: tasks/users.yml
 
-    - name: Create users
-      ansible.builtin.user:
-        name: "{{ item.name }}"
-        groups: "{{ item.groups | default(omit) }}"
-        shell: /bin/bash
-        password: "{{ item.password | default(omit) }}"
-        state: present
-      loop: "{{ users }}"
+    - name: Include SSH hardening tasks
+      ansible.builtin.include_tasks: tasks/ssh_hardening.yml
 
-    - name: Setup SSH keys for users
-      ansible.posix.authorized_key:
-        user: "{{ item.name }}"
-        key: "{{ item.ssh_key }}"
-        state: present
-        exclusive: true
-      loop: "{{ users }}"
-      when: item.ssh_key is defined
-
-    - name: Configure sudo without password
-      ansible.builtin.lineinfile:
-        path: "/etc/sudoers.d/{{ item.name }}-nopasswd"
-        line: "{{ item.name }} ALL=(ALL) NOPASSWD:ALL"
-        create: true
-        mode: "0440"
-        validate: visudo -cf %s
-      loop: "{{ users }}"
-      when: item.sudo_nopasswd | default(false)
-
-    - name: Configure SSH hardening
-      ansible.builtin.template:
-        src: templates/sshd_hardening.conf.j2
-        dest: /etc/ssh/sshd_config.d/hardening.conf
-        mode: "0644"
-      notify: restart sshd
-
-    - name: Configure Fail2ban for SSH
-      ansible.builtin.template:
-        src: templates/fail2ban_sshd.local.j2
-        dest: /etc/fail2ban/jail.d/sshd.local
-        mode: "0644"
-      notify: restart fail2ban
-
-    - name: Download Tailscale installation script
-      ansible.builtin.get_url:
-        url: https://tailscale.com/install.sh
-        dest: /tmp/tailscale-install.sh
-        mode: "0755"
-
-    - name: Install Tailscale
-      ansible.builtin.shell: |
-        set -o pipefail
-        /tmp/tailscale-install.sh
-      args:
-        creates: /usr/bin/tailscale
-        executable: /bin/bash
+    - name: Include Tailscale setup
+      ansible.builtin.include_tasks: tasks/tailscale.yml
 
   handlers:
-    - name: restart sshd
+    - name: Restart SSH
       ansible.builtin.service:
         name: ssh
         state: restarted
 
-    - name: restart fail2ban
+    - name: Restart Fail2Ban
       ansible.builtin.service:
         name: fail2ban
         state: restarted

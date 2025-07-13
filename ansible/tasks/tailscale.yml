@@ -1,0 +1,35 @@
+---
+- name: Install and configure Tailscale
+  include_role:
+    name: artis3n.tailscale.machine
+  vars:
+    tailscale_authkey: "{{ tailscale_auth_key }}"
+    tailscale_args: "--ssh"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled
+
+- name: Set UFW default policies
+  community.general.ufw:
+    direction: "{{ item.direction }}"
+    policy: "{{ item.policy }}"
+  with_items:
+    - { direction: "incoming", policy: "deny" }
+    - { direction: "outgoing", policy: "allow" }
+
+- name: Allow traffic on Tailscale interface
+  community.general.ufw:
+    rule: allow
+    direction: in
+    interface: tailscale0
+
+- name: Delete existing public SSH rule
+  community.general.ufw:
+    rule: allow
+    port: "22"
+    proto: tcp
+    delete: true
+  register: ufw_delete_ssh_rule
+  failed_when: ufw_delete_ssh_rule.failed and 'Skipping' not in ufw_delete_ssh_rule.stdout | default('')
+  notify: Restart SSH

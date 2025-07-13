@@ -1,0 +1,14 @@
+---
+- name: Harden SSH configuration
+  ansible.builtin.template:
+    src: templates/sshd_hardening.conf.j2
+    dest: /etc/ssh/sshd_config.d/hardening.conf
+    mode: '0600'
+  notify: Restart SSH
+
+- name: Configure Fail2Ban for SSH
+  ansible.builtin.template:
+    src: templates/fail2ban_sshd.local.j2
+    dest: /etc/fail2ban/jail.d/sshd.local
+    mode: '0644'
+  notify: Restart Fail2Ban

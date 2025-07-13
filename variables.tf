@@ -59,3 +59,17 @@ variable "users" {
   }))
   description = "List of users to create on the server"
 }
+
+# Tailscale configuration
+variable "tailscale_auth_key" {
+  type        = string
+  description = "Tailscale auth key"
+  sensitive   = true
+}
+
+# Firewall configuration
+variable "use_public_firewall_ips" {
+  type        = bool
+  description = "If true, firewall rules for HTTP/HTTPS will use public IPs ('any'). If false, they will use the list from 'firewall_source_ips'."
+  default     = false
+}

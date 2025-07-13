@@ -45,6 +45,9 @@ users:
     sudo_nopasswd: true
 %{endif~}
 %{endfor~}
+
+# Provisioning
+tailscale_auth_key: "${var.tailscale_auth_key}"
   EOT
   filename = "ansible/secret-vars.yml"
 
@@ -66,6 +69,7 @@ resource "null_resource" "ansible_provisioner" {
   ]
 
   provisioner "local-exec" {
+    # Wait 45 seconds to ensure the server is ready
     command     = "sleep 45 && ansible-playbook -i inventory.yml playbook.yml -v"
     working_dir = "${path.module}/ansible"
   }
